@@ -78,7 +78,7 @@ export default class RegisterTeacher extends React.Component {
 
     registerTeacher = async (values) => {
         console.log(values.name + "  " + this.state.selectedText+ " "+values.surname+"  " + values.password + "  " + values.email+" "+values.passwordConfirmation);
-        let url = 'http://192.168.1.53:3500/api/user/register';
+        let url = 'https://nodejs-mongo-api-mobile.herokuapp.com/api/user/register';
         await fetch(url, {
             method: 'POST',
             body: JSON.stringify({
@@ -118,7 +118,7 @@ export default class RegisterTeacher extends React.Component {
         console.log("girdii");
         try {
             let response = await fetch(
-                'http://192.168.1.53:3500/api/universities',
+                'https://nodejs-mongo-api-mobile.herokuapp.com/api/universities',
             );
             let responseJson = await response.json();
             this.setState({
@@ -145,7 +145,6 @@ export default class RegisterTeacher extends React.Component {
         }
         else {
             this.registerTeacher(formikProps.values);
-            
         }
     }
 
@@ -164,7 +163,7 @@ export default class RegisterTeacher extends React.Component {
                 >
                     <Block flex middle>
 
-                        <Block style={styles.registerContainer}>
+                        <Block style={{marginLeft:12}}>
                             <KeyboardAwareScrollView style={{ marginVertical: 40 }} behavior="padding" enabled>
                                 <Formik initialValues={{ name: '', surname: '', email: '',  password: '', passwordConfirmation: ''}}
                                     onSubmit={(values, actions) => {
@@ -180,8 +179,8 @@ export default class RegisterTeacher extends React.Component {
                                     {formikProps => (
                                         <Block flex>
                                             <Block flex={0.17} style={{ marginTop: 0 }} middle>
-                                                <Text color="#8898AA" size={17}>
-                                                    Rehberlik Uygulaması
+                                                <Text color="black" size={17}>
+                                                    Rehberlik Uygulaması - Danışman
                                         </Text>
                                             </Block>
                                             <Block flex center>
@@ -209,7 +208,7 @@ export default class RegisterTeacher extends React.Component {
                                                     <Block width={width * 0.8} style={{ marginBottom: 15 }}>
                                                         <Input
                                                             borderless
-                                                            placeholder="Soyİsim"
+                                                            placeholder="Soy İsim"
                                                             onChangeText={formikProps.handleChange("surname")}
                                                             iconContent={
                                                                 <Icon
@@ -225,7 +224,8 @@ export default class RegisterTeacher extends React.Component {
                                                     <Block width={width * 0.8} style={{ marginBottom: 15 }}>
                                                         <Input
                                                             borderless
-                                                            placeholder="Email"
+                                                            autoCapitalize = 'none'
+                                                            placeholder="E-mail"
                                                             onChangeText={formikProps.handleChange("email")}
                                                             iconContent={
                                                                 <Icon
@@ -323,7 +323,7 @@ export default class RegisterTeacher extends React.Component {
 const styles = StyleSheet.create({
     registerContainer: {
         width: width * 0.9,
-        height: height * 0.83,
+        height: height * 0.95,
         backgroundColor: "#F4F5F7",
         borderRadius: 30,
         shadowColor: argonTheme.COLORS.BLACK,
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
         textAlign: "left"
     },
     pickerStyle: {
-        width: "80%",
+        width: "88%",
         elevation: 3,
         paddingRight: 25,
         marginTop: 12,

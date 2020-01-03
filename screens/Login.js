@@ -1,11 +1,12 @@
-import React from "react";
+import React,{useContext} from "react";
 import {
     StyleSheet,
     ImageBackground,
     Dimensions,
     StatusBar,
     KeyboardAvoidingView,
-    Alert
+    Alert,
+    
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -14,24 +15,14 @@ import { Images, argonTheme } from "../constants";
 import RNPicker from "rn-modal-picker";
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { ServiceContext } from '../contexts/ServiceContext';
+import {UserContext} from '../contexts/UserContext';
+import {AuthContext} from '../contexts/AuthContext'
 import { requiredText, tcText, phoneRegExp, onlyText, onlyTextError } from '../constants/strings';
-
 
 const { width, height } = Dimensions.get("screen");
 
 const validationSchema = yup.object().shape({
-    name: yup
-        .string().matches(onlyText, onlyTextError)
-        .label('tcIdentityKey')
-        .min(2, "İsim 2 harfden az olamaz")
-        .max(30, "İsim 30 harfden çok olamaz")
-        .required(requiredText),
-    surname: yup
-        .string().matches(onlyText, onlyTextError)
-        .label('tcIdentityKey')
-        .min(2, "Soyisim 2 harfden az olamaz")
-        .max(30, "Soyisim 30 harfden çok olamaz")
-        .required(requiredText),
     email: yup
         .string()
         .min(6, "Email 6 harfden az olamaz")
@@ -39,91 +30,84 @@ const validationSchema = yup.object().shape({
         .email("Lütfen geçerli bir email giriniz")
         .label('email')
         .required(requiredText),
-    username: yup
-        .string()
-        .label('username')
-        .min(2, "Kullanıcı adı 2 harfden az olamaz")
-        .max(15, "Kullanıcı adı 15 harfden çok olamaz")
-        .required(requiredText),
     password: yup
         .string()
         .label('password')
         .min(1, 'En az 2 karakter girmelisiniz!')
         .max(20, 'En fazla 20 karakter girebilirsiniz!')
-        .required(requiredText),
-    passwordConfirmation: yup.string()
-        .oneOf([yup.ref('password'), null], 'Şifreler eşleşmiyor!'),
+        .required(requiredText)
 });
+const Login =(props)=> {
 
-export default class RegisterStudent extends React.Component {
-
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-    }
-
-    
-
-    componentDidMount() {
-
-    }
-    formikFunc = (formikProps) => {
-        if (formikProps.errors.name || formikProps.errors.surname || formikProps.errors.password || formikProps.errors.email || formikProps.errors.passwordConfirmation || formikProps.errors.username) {
-            Alert.alert("Hata", "İsim: " + formikProps.errors.name + "\n" + "Soyisim: " + formikProps.errors.surname + "\n" + "Kullanıcı Adı: " + formikProps.errors.username + "\n" + "Şifre: " + formikProps.errors.password + "\n" + "Şifre Doğrulama: " + formikProps.errors.passwordConfirmation + "\n" + "Email: " + formikProps.errors.email)
+    const baseUrl=useContext(ServiceContext);
+    const [user, setUser]=useContext(UserContext);
+    const [token, setToken]=useContext(AuthContext);
+    const formikFunc = (formikProps) => {
+        if ( formikProps.errors.password || formikProps.errors.email) {
+            Alert.alert( "Email: " + formikProps.errors.email+ "Şifre: " + formikProps.errors.password + "\n")
         }
         else {
-            this.registerStudent(formikProps.values);
-
+            login(formikProps.values);
         }
     }
 
-    registerStudent = async (values) => {
+    const getUserData = async (token)=>{
+        await fetch(baseUrl+"posts",{
+            method: 'GET',
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "auth-token":token
+            }
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+          //console.log(responseJson);
+          let deger=responseJson;
+          setUser(deger);
+          console.log(user)
 
-        console.log(values.name + "  " + values.username + " " + values.surname + "  " + values.password + "  " + values.email + " " + values.passwordConfirmation);
-        let url = 'http://192.168.1.53:3500/api/user/register';
+        }).finally(() => {
+          
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+
+   const login = async (values) => {
+        console.log( values.email+ values.password   );
+        let url = baseUrl+ 'user/login';
+        console.log("url: "+url);
         await fetch(url, {
             method: 'POST',
             body: JSON.stringify({
-                name: values.name,
-                surname: values.surname,
                 email: values.email,
-                password: values.password,
-                username: values.username,
-                confirmPassword: values.passwordConfirmation,
-                userType: 1
-            }),
+                password: values.password
+                }),
             headers: {
                 "Content-type": "application/json; charset=UTF-8"
             }
         }).then(response => {
             if (response.status == 200) {
-                alert("Başarıyla Kayıt Oluşturuldu");
-                this.props.navigation.navigate("Login");
+                //alert("Giriş Başarılı!");
+                props.navigation.navigate("BottomNavigator");
             }
             else {
-                alert("Başarısız oldu");
+                alert("Email veya Şifre Hatalı!");
             }
             return response.json()
         }).then(json => {
-
+            let veri=json['token'];
+            getUserData(veri);
+            setToken(veri);
         }).finally(() => {
-
-
-
-            // console.log("finally " + this.state.accounts[0].accountNo)
+            console.log("user: "+JSON.stringify(user))
         })
             .catch((error) => {
                 console.error(error);
             });
     }
 
-    static navigationOptions = {
-        title: 'Kayıt Ol',
-        header: null
-    };
-
-    render() {
         return (
             <Block flex middle>
                 <StatusBar hidden />
@@ -134,13 +118,13 @@ export default class RegisterStudent extends React.Component {
                     
                     <Block flex middle>
 
-                        <Block >
+                        <Block style={{marginTop:150}}>
                       
                             <KeyboardAwareScrollView style={{ marginVertical: 40 }} behavior="padding" enabled>
-                                <Formik initialValues={{ name: '', surname: '', email: '', username: '', password: '', passwordConfirmation: '' }}
+                                <Formik initialValues={{  email: '', password: '', }}
                                     onSubmit={(values, actions) => {
                                         //alert(JSON.stringify(values.firstName));
-                                        this.formikFunc(values)
+                                        this.registerTeacher(values)
                                         setTimeout(() => {
                                             actions.setSubmitting(false);
                                         }, 1000);
@@ -153,7 +137,7 @@ export default class RegisterStudent extends React.Component {
                                         <Block flex>
                                             <Block flex={0.17} style={{ marginTop: 0 }} middle>
                                                 <Text color="black" size={17}>
-                                                    Rehberlik Uygulaması - Öğrenci
+                                                    Rehberlik Uygulaması - Giriş Yap
                                         </Text>
                                             </Block>
                                             <Block flex center>
@@ -162,55 +146,6 @@ export default class RegisterStudent extends React.Component {
                                                     behavior="padding"
                                                     enabled
                                                 >
-
-                                                    <Block width={width * 0.8} style={{ marginBottom: 15 }}>
-                                                        <Input
-                                                            borderless
-                                                            placeholder="İsim"
-                                                            onChangeText={formikProps.handleChange("name")}
-                                                            iconContent={
-                                                                <Icon
-                                                                    size={16}
-                                                                    color={argonTheme.COLORS.ICON}
-                                                                    name="hat-3"
-                                                                    family="ArgonExtra"
-                                                                    style={styles.inputIcons}
-                                                                />
-                                                            }
-                                                        />
-                                                    </Block>
-                                                    <Block width={width * 0.8} style={{ marginBottom: 15 }}>
-                                                        <Input
-                                                            borderless
-                                                            placeholder="Soyisim"
-                                                            onChangeText={formikProps.handleChange("surname")}
-                                                            iconContent={
-                                                                <Icon
-                                                                    size={16}
-                                                                    color={argonTheme.COLORS.ICON}
-                                                                    name="hat-3"
-                                                                    family="ArgonExtra"
-                                                                    style={styles.inputIcons}
-                                                                />
-                                                            }
-                                                        />
-                                                    </Block>
-                                                    <Block width={width * 0.8} style={{ marginBottom: 15 }}>
-                                                        <Input
-                                                            borderless
-                                                            placeholder="Kullanıcı Adı"
-                                                            onChangeText={formikProps.handleChange("username")}
-                                                            iconContent={
-                                                                <Icon
-                                                                    size={16}
-                                                                    color={argonTheme.COLORS.ICON}
-                                                                    name="hat-3"
-                                                                    family="ArgonExtra"
-                                                                    style={styles.inputIcons}
-                                                                />
-                                                            }
-                                                        />
-                                                    </Block>
                                                     <Block width={width * 0.8} style={{ marginBottom: 15 }}>
                                                         <Input
                                                             borderless
@@ -245,36 +180,25 @@ export default class RegisterStudent extends React.Component {
                                                             }
                                                         />
                                                     </Block>
-                                                    <Block width={width * 0.8}>
-                                                        <Input
-                                                            password
-                                                            borderless
-                                                            placeholder="Şifreyi Tekrar Giriniz"
-                                                            onChangeText={formikProps.handleChange("passwordConfirmation")}
-                                                            iconContent={
-                                                                <Icon
-                                                                    size={16}
-                                                                    color={argonTheme.COLORS.ICON}
-                                                                    name="padlock-unlocked"
-                                                                    family="ArgonExtra"
-                                                                    style={styles.inputIcons}
-                                                                />
-                                                            }
-                                                        />
-                                                    </Block>
-
-
-
                                                     <Block middle>
                                                         <Button
                                                             color="primary"
                                                             style={styles.createButton}
-                                                            onPress={() => this.formikFunc(formikProps)}>
+                                                            onPress={() => formikFunc(formikProps)}>
                                                             <Text bold size={14} color={argonTheme.COLORS.WHITE}>
-                                                                KAYIT OL
+                                                                GİRİŞ YAP
                         </Text>
                                                         </Button>
                                                     </Block>
+                                                    <Block middle>
+                        <Text
+                             paragraph color="black" size={15} style={{marginTop:10}}>
+                               Bir hesabın yok mu?   
+                          <Text bold size={13}  color="#1737BF"  onPress={() => props.navigation.navigate("Register")}>
+                            {"  KAYIT OL"}
+                        </Text>
+                        </Text>
+                      </Block>
                                                 </KeyboardAvoidingView>
                                             </Block>
                                         </Block>
@@ -286,13 +210,12 @@ export default class RegisterStudent extends React.Component {
                 </ImageBackground>
             </Block>
         );
-    }
 }
 
 const styles = StyleSheet.create({
     registerContainer: {
         width: width * 0.9,
-        height: height * 0.95,
+        height: height * 0.52,
         backgroundColor: "#F4F5F7",
         borderRadius: 30,
         shadowColor: argonTheme.COLORS.BLACK,
@@ -338,7 +261,7 @@ const styles = StyleSheet.create({
     },
     createButton: {
         width: width * 0.5,
-        marginTop: 25
+        marginTop: 0
     },
     container: {
         flex: 1,
@@ -427,3 +350,5 @@ const styles = StyleSheet.create({
         fontSize: 15
     }
 });
+
+export default Login;

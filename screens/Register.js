@@ -10,6 +10,7 @@ import { Block, Checkbox, Text, theme } from "galio-framework";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Button, Icon, Input } from "../components";
 import { Images, argonTheme } from "../constants";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -32,7 +33,7 @@ class Register extends React.Component {
         >
           <Block flex middle>
 
-            <Block style={styles.registerContainer}>
+            <Block style={{marginTop:180}}>
               <KeyboardAwareScrollView style={{ marginVertical: 40 }} behavior="padding" enabled>
                 <Block flex>
                   <Block flex={0.17} middle>
@@ -68,6 +69,15 @@ class Register extends React.Component {
                         </Text>
                         </Button>
                       </Block>
+                      <Block middle>
+                        <Text
+                             paragraph color="black" size={15} style={{marginTop:10}}>
+                               Zaten bir hesabın var mı?   
+                          <Text bold size={13}  color="#1737BF"  onPress={() => navigation.navigate("Login")}>
+                            {"  GİRİŞ YAP"}
+                        </Text>
+                        </Text>
+                      </Block>
                     </KeyboardAvoidingView>
                   </Block>
                 </Block>
@@ -83,8 +93,8 @@ class Register extends React.Component {
 const styles = StyleSheet.create({
   registerContainer: {
     width: width * 0.8,
-    height: height * 0.41,
-    backgroundColor: "#BFBA17",
+    height: height * 0.43,
+    backgroundColor: "#F4F5F7",
     borderRadius: 50,
     shadowColor: argonTheme.COLORS.BLACK,
     shadowOffset: {
