@@ -7,7 +7,10 @@ import { UserContext } from '../contexts/UserContext';
 import Header from '../components/Header'
 
 //const roomName = 'ab@gmail.com' + '@!@!2!@!@' + 'b@gmail.com';
-export default class Chat extends Component {
+
+const baseUrl = 'http://192.168.1.53:3500/api/';
+export default class Chat extends React.PureComponent {
+  static contextType = UserContext
   constructor(props) {
     super(props);
     const { navigation } = this.props;
@@ -15,6 +18,9 @@ export default class Chat extends Component {
       username: "",
       password: "",
       userId: navigation.getParam('userId', 'NO-ID'),
+      user: {},
+      otherUserId: navigation.getParam('otherUserId', 'NO-ID'),
+      otherUser: {},
       chatMessage: "",
       chatMessages: [],
       roomName: navigation.getParam('room', 'NO-ID'),
@@ -32,9 +38,19 @@ export default class Chat extends Component {
   }
 
   fun = (socket) => {
-    socket.emit('room', { room: this.state.roomName });
+    let room = {
+      roomName: this.state.roomName,
+      userId: this.state.userId,
+      otherUserId: this.state.otherUserId
+    }
+    console.log("room: " + JSON.stringify(room))
+    socket.emit('room', { room: room });
     socket.on(this.state.roomName, data => {
-      console.log('i have joined', data.room)
+      console.log('i have joined', this.state.roomName)
+      this.setState({
+        roomName: data.room
+      })
+
       let lastMessages = [];
       data.messagess.forEach(message => {
         let newMessage = {
@@ -47,7 +63,7 @@ export default class Chat extends Component {
             avatar: 'https://placeimg.com/140/140/any',
           },
         }
-        console.log(JSON.stringify(newMessage));
+        console.log(JSON.stringify(newMessage.text));
         this.setState({
           chatMessages: [...this.state.chatMessages, newMessage]
         });
@@ -59,6 +75,11 @@ export default class Chat extends Component {
   }
 
   componentDidMount() {
+    const currentUser = this.context
+    this.setState({
+      user: currentUser[0]
+    })
+    this.getOtherUserData(this.state.otherUserId);
     this.socket = io("http://192.168.1.53:3600", { forceNode: true });
     this.socket.on("chat message", msg => {
       let newMessage = {
@@ -81,35 +102,55 @@ export default class Chat extends Component {
     this.fun(this.socket);
   }
 
-  _login = () => {
-    if (this.state.username === "username" && this.state.password === "1234") {
-      Alert.alert("Giriş Yapıldı");
+  submitChatMessage(chatMessage) {
+    let currentUserType = '';
+    if (this.state.user.userType === 2) {
+      currentUserType = 'TeacherUser';
     }
     else {
-      Alert.alert("Tekrar Giriniz");
+      currentUserType = 'StudentUser';
     }
-  }
-
-  submitChatMessage(chatMessage) {
-
+    console.log('userType: ' + this.state.user.userType)
     let data = {
       message: chatMessage.text,
       room: this.state.roomName,
       senderId: this.state.userId,
-      created_at: chatMessage.createdAt
+      created_at: chatMessage.createdAt,
+      onModelUser: currentUserType
     }
     console.log("ddd: " + JSON.stringify(data))
     this.socket.emit('chat message', data);
-    this.setState(previousState => ({
+    this.setState(({
       chatMessages: [...this.state.chatMessages, chatMessage],
     }))
+  }
+
+  getOtherUserData = async (userId) => {
+    await fetch(baseUrl + 'user/' + userId, {
+      method: 'GET',
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      }
+    })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        //console.log(responseJson);
+        let deger = responseJson;
+        this.setState({
+          otherUser: deger
+        })
+      }).finally(() => {
+
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   sortByDate(arr) {
     arr.sort(function (a, b) {
       return Number(new Date(a.createdAt)) - Number(new Date(b.createdAt));
     });
-
     return arr;
   }
 
@@ -120,28 +161,14 @@ export default class Chat extends Component {
   }
 
   render() {
-    const chatMessages = this.state.chatMessages.map((chatMessage, i) => (
-      <View style={styles.view}>
-        <Text >{chatMessage} </Text>
-      </View>
-    ));
+    // const chatMessages = this.state.chatMessages.map((chatMessage, i) => (
+    //   <View style={styles.view}>
+    //     <Text >{chatMessage} </Text>
+    //   </View>
+    // ));
     return (
-      // <View style={styles.container}>
-      //     <TextInput
-      //         style={{ height: 40, borderWidth: 2, top: 60 }}
-      //         autoCorrect={false}
-      //         value={this.state.chatMessage}
-      //         returnKeyType="send"
-      //         onSubmitEditing={() => this.submitChatMessage()}
-      //         onChangeText={chatMessage => {
-      //             this.setState({ chatMessage });
-      //         }} />
-      //     <KeyboardAwareScrollView style={{ marginVertical: 60 }}  >
-      //         {chatMessages}
-      //     </KeyboardAwareScrollView>
-      // </View>
       <View style={{ flex: 1 }}>
-        <Text style={{ marginTop: 20, justifyContent: 'flex-end' }}>Username</Text>
+        <Text style={{ marginTop: 20, alignSelf: 'center' }}>{this.state.otherUser.name}</Text>
         <GiftedChat
           messages={this.state.chatMessages}
           onSend={messages => this.submitChatMessage(messages[0])}
@@ -149,6 +176,7 @@ export default class Chat extends Component {
           placeholder="Bir mesaj yazınız..."
           scrollToBottom={true}
           showAvatarForEveryMessage={false}
+          renderUsernameOnMessage={true}
           user={{
             _id: this.state.userId,
           }}

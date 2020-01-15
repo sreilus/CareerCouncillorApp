@@ -12,14 +12,51 @@ import { Block, Text, theme } from "galio-framework";
 import { Button } from "../components";
 import { Images, argonTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
-import  {UserContext}  from '../contexts/UserContext';
-
 
 const { width, height } = Dimensions.get("screen");
 
 const thumbMeasure = (width - 48 - 32) / 3;
 
-export default class ProfileArgon extends React.Component {
+export default class OtherProfile extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            isLoading: true,
+            otherUserId:"",
+            otherUserInfo:{},
+            baseUrl: 'http://192.168.1.53:3500/api/'
+        };
+    }
+
+    componentDidMount() {
+        let sayi =this.props.navigation.getParam('userId', 'NO-ID')
+        console.log("s: "+sayi)
+        this.getUserInfo();
+    }
+
+    getUserInfo = async () => {
+        await this.setState({
+            otherUserId:this.props.navigation.getParam('userId', 'NO-ID')
+        })
+        let url = this.state.baseUrl + 'user/'+this.state.otherUserId;
+        console.log('url: ' + url)
+        await fetch(url)
+            .then((response) => response.json())
+            .then((responseJson) => {
+                let deger = responseJson;
+                this.setState({
+                    otherUserInfo:deger
+                });
+                console.log("user: "+JSON.stringify(this.state.otherUserInfo))
+            }).finally(() => {
+
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
   render() {
     return (
       <Block flex style={styles.profile}>
@@ -52,10 +89,12 @@ export default class ProfileArgon extends React.Component {
                       style={{ backgroundColor: argonTheme.COLORS.INFO }}
                     >
                       CONNECT
+                      
                     </Button>
                     <Button
                       small
                       style={{ backgroundColor: argonTheme.COLORS.DEFAULT }}
+                      onPress={()=>alert("girdi")}
                     >
                       MESSAGE
                     </Button>
@@ -98,16 +137,9 @@ export default class ProfileArgon extends React.Component {
                 </Block>
                 <Block flex>
                   <Block middle style={styles.nameInfo}>
-                  <UserContext.Consumer>
-                     {
-                  (user)=>(
                     <Text bold size={28} color="#32325D">
-                    {user[0].name}
+                     {this.state.otherUserInfo.name}
                   </Text>
-                  )
-                         }
-              </UserContext.Consumer>
-                    
                     <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
                       San Francisco, USA
                     </Text>

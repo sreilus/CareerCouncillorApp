@@ -4,13 +4,15 @@ import {
     StatusBar
 } from "react-native";
 
-import AddMovie from './screens/AddMovie'
+import AddMovie from './screens/AddMovie';
 
-import ProfilePage from './screens/ProfilePage'
-import GetAllUser from './screens/GetAllUser'
-import ProfileArgon from './screens/ProfileArgon'
-import Chat from './screens/Chat'
-import UserList from './screens/UserList'
+import ProfilePage from './screens/ProfilePage';
+import ProfileArgon from './screens/ProfileArgon';
+import Chat from './screens/Chat';
+import UserList from './screens/UserList';
+import ChatList from './screens/ChatList';
+import Universities from './screens/Universities'
+import UniversityPrograms from './screens/UniversityPrograms'
 
 const MusicRoute = () => <Text>Music</Text>;
 
@@ -22,7 +24,8 @@ export default class BottomNavigator extends React.Component {
     state = {
         index: 0,
         routes: [
-            { key: 'music', title: 'Anasayfa', icon: 'home' },
+            { key: 'music', title: 'Üniversiteler', icon: 'home' },
+            { key: 'programs', title: 'Bölümler', icon: 'home' },
             { key: 'users', title: 'Kullanıcılar', icon: 'face-profile' },
             { key: 'albums', title: 'Mesajlar', icon: 'chat' },
             { key: 'recents', title: 'Profil', icon: 'face-profile' },
@@ -38,25 +41,32 @@ export default class BottomNavigator extends React.Component {
     _handleIndexChange = index => this.setState({ index });
 
     _renderScene = BottomNavigation.SceneMap({
-        music: AddMovie,
+        music: Universities,
+        programs: UniversityPrograms,
         users: UserList,
-        albums: ProfilePage,
+        albums: ChatList,
         recents: ProfileArgon,
-        chat:Chat
+        chat: Chat
     });
+
+    componentDidMount() {
+
+    }
 
     renderScene = ({ route, jumpTo }) => {
         switch (route.key) {
             case 'music':
-                return <AddMovie jumpTo={jumpTo} />;
+                return <Universities navigation={this.props.navigation} jumpTo={jumpTo} />;
+            case 'programs':
+                return <UniversityPrograms navigation={this.props.navigation} jumpTo={jumpTo} />;
             case 'users':
                 return <UserList navigation={this.props.navigation} jumpTo={jumpTo} />;
             case 'albums':
-                return <ProfilePage jumpTo={jumpTo} />;
+                return <ChatList navigation={this.props.navigation} jumpTo={jumpTo} />;
             case 'recents':
                 return <ProfileArgon jumpTo={jumpTo} />;
         }
-      }
+    }
 
     render() {
         return (

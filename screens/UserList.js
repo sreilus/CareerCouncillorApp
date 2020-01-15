@@ -24,6 +24,8 @@ export default class UserList extends Component {
             ],
             isLoading: true,
             users: [],
+            page: 0,
+            posts: [],
             baseUrl: 'https://nodejs-mongo-api-mobile.herokuapp.com/api/'
         };
     }
@@ -43,7 +45,11 @@ export default class UserList extends Component {
             .then((responseJson) => {
                 let deger = responseJson;
                 this.convertItemForList(deger);
-
+                this.setState({
+                    page: 0
+                }, function () {
+                    this.addRecords(0);
+                })
             }).finally(() => {
 
             })
@@ -55,7 +61,28 @@ export default class UserList extends Component {
         })
     }
 
+    addRecords = (page) => {
+        // assuming this.state.dataPosts hold all the records
+        const newRecords = []
+        for (var i = page * 12, il = i + 12; i < il && i <
+            this.state.users.length; i++) {
+            newRecords.push(this.state.users[i]);
+        }
+        this.setState({
+            posts: [...this.state.posts, ...newRecords]
+        });
+    }
+
+    onScrollHandler = () => {
+        this.setState({
+            page: this.state.page + 1
+        }, () => {
+            this.addRecords(this.state.page);
+        });
+    }
+
     convertItemForList = (userList) => {
+        let userArray = [];
         userList.map((user) => {
             let newUser = {
                 id: user._id,
@@ -63,68 +90,94 @@ export default class UserList extends Component {
                 date: "12 jan",
                 time: '11:14 am',
                 video: false,
-                image: "https://bootdey.com/img/Content/avatar/avatar7.png",
-                email:user.email
+                image: 'https://www.bootdey.com/img/Content/avatar/avatar7.png',
+                email: user.email
             }
-            this.setState({
-                users :[...this.state.users,newUser]
-            });
+            userArray.push(newUser);
         })
-        
+        this.setState({
+            users: userArray
+        });
+
     }
 
-    renderItem = ({ item }) => {
-        console.log("ttt: "+JSON.stringify(item));
-        var callIcon = "https://img.icons8.com/color/48/000000/phone.png";
-        if (item.video == true) {
-            callIcon = "https://img.icons8.com/color/48/000000/video-call.png";
-        }
-        return (
-            <UserContext.Consumer>
-                {
-              (user) => (
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('Chat', { room: item.email, userId: user[0]._id })}>
-                <View style={styles.row}>
-                    <Image source={{ uri: item.image }} style={styles.pic} />
-                    <View>
-                        <View style={styles.nameContainer}>
-                            <Text style={styles.nameTxt}>{item.name}</Text>
-                        </View>
-                        <View style={styles.end}>
-                            {/* <Image style={[styles.icon, { marginLeft: 15, marginRight: 5, width: 14, height: 14 }]} source={{ uri: "https://img.icons8.com/small/14/000000/double-tick.png" }} /> */}
-                            {/* <Text style={styles.time}>{item.date} {item.time}</Text> */}
-                        </View>
-                    </View>
-                    <Image style={[styles.icon, { marginRight: 50 }]}  />
-                </View>
-            </TouchableOpacity>
-              )}
-            </UserContext.Consumer>
-        );
+    userOnPress = (user, otherUser) => {
+        let roomName = otherUser.email + '@!@!2!@!@' + user[0].email
+        console.log('r: ' + roomName)
+        console.log("other: " + JSON.stringify(otherUser))
+        this.props.navigation.navigate('Chat', { room: roomName, userId: user[0]._id, otherUserId: otherUser.id })
     }
+
+    // renderItem = ({ item }) => {
+    //     console.log("ttt: " + JSON.stringify(item));
+    //     // var callIcon = "https://img.icons8.com/color/48/000000/phone.png";
+    //     // if (item.video == true) {
+    //     //     callIcon = "https://img.icons8.com/color/48/000000/video-call.png";
+    //     // }
+    //     return (
+    //         <UserContext.Consumer>
+    //             {
+    //                 (user) => (
+    //                     <View style={styles.row}>
+    //                         <TouchableOpacity onPress={() => this.props.navigation.navigate('OtherProfile', { userId: item.id })}>
+    //                             {console.log("t: " + item.id)}
+    //                             <Image source={{ uri: item.image }} style={styles.pic} />
+    //                         </TouchableOpacity>
+    //                         <TouchableOpacity onPress={() => this.userOnPress(user, item)}>
+    //                             <View>
+    //                                 <View style={styles.nameContainer}>
+    //                                     <Text style={styles.nameTxt}>{item.name}</Text>
+    //                                 </View>
+    //                                 <View style={styles.end}>
+    //                                 </View>
+    //                             </View>
+    //                         </TouchableOpacity>
+    //                         <Image style={[styles.icon, { marginRight: 50 }]} />
+    //                     </View>
+    //                 )}
+    //         </UserContext.Consumer>
+    //     );
+    // }
 
     render() {
         if (this.state.isLoading === false) {
+            return (
+                <View style={{ flex: 1 }} >
+                    <FlatList
+                        data={this.state.users}
+                        keyExtractor={(item) => {
+                            return item.id;
+                        }}
+                        renderItem={({ item }) =>
+                            <UserContext.Consumer>
+                                {
+                                    (user) => (
+                                        <View style={styles.row}>
+                                            <TouchableOpacity onPress={() => this.props.navigation.navigate('OtherProfile', { userId: item.id })}>
+                                                {console.log("user: " + item.id)}
+                                                <Image source={{ uri: item.image }} style={styles.pic} />
+                                            </TouchableOpacity>
+                                            <TouchableOpacity onPress={() => this.userOnPress(user, item)}>
+                                                <View>
+                                                    <View style={styles.nameContainer}>
+                                                        <Text style={styles.nameTxt}>{item.name}</Text>
+                                                    </View>
+                                                    <View style={styles.end}>
+                                                    </View>
+                                                </View>
+                                            </TouchableOpacity>
+                                            <Image style={[styles.icon, { marginRight: 50 }]} />
+                                        </View>
+                                    )}
+                            </UserContext.Consumer>
+                        } />
+                </View>
+            );
+        }
         return (
-            <View style={{ flex: 1 }} >
-                <FlatList
-                    extraData={this.state}
-                    data={this.state.users}
-                    keyExtractor={(item) => {
-                        return item.id;
-                    }}
-                    renderItem={this.renderItem} />
-            </View>
-        );
-    }
-    return (
-              <View>
-                  <Spinner
-          visible={true}
-          textContent={'Loading...'}
-          textStyle={styles.spinnerTextStyle}
-        />
-              </View>)
+            <View style={{alignSelf:'center'}}>
+                <Text>Yükleniyor...</Text>
+            </View>)
     }
 }
 

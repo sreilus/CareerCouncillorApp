@@ -4,12 +4,14 @@ import Register from './screens/Register';
 import RegisterStudent from './screens/RegisterStudent';
 import RegisterTeacher from './screens/RegisterTeacher';
 import Login from './screens/Login';
-import GetAllUser from './screens/GetAllUser'
 import BottomNavigator from './BottomNavigator';
 import Chat from './screens/Chat'
+import UniChat from './screens/UniChat'
+import UniProgramChat from './screens/UniProgramChat'
 import ChatTest from './screens/ChatTest'
 import UserList from './screens/UserList';
-
+import OtherProfile from './screens/OtherProfile'
+import Universities from './screens/Universities'
 
 const AppNavigator = createStackNavigator(
     {
@@ -18,10 +20,12 @@ const AppNavigator = createStackNavigator(
       RegisterTeacher: RegisterTeacher,
       Login: Login,
       BottomNavigator:BottomNavigator,
-      GetAllUser:GetAllUser,
       Chat:Chat,
+      UniChat:UniChat,
+      UniProgramChat:UniProgramChat,
       ChatTest:ChatTest,
-      UserList:UserList
+      UserList:UserList,
+      OtherProfile:OtherProfile
     },
     {
       initialRouteName: 'Login',
