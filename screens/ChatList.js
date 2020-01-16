@@ -20,7 +20,7 @@ const ChatList = (props) => {
     const socket = io("http://192.168.1.53:3600", { forceNode: true });
 
     socket.on('getChatUsers', data => {
-        console.log("veri: " + JSON.stringify(data));
+        //console.log("veri: " + JSON.stringify(data));
         setChats(data);
     });
     useEffect(() => {
@@ -33,6 +33,7 @@ const ChatList = (props) => {
         console.log('r: ' + roomName)
         console.log("other: " + JSON.stringify(otherUser))
         props.navigation.navigate('Chat', { room: roomName, userId: user[0]._id, otherUserId: otherUser.id })
+        
     }
 
     // const renderItem = ({ item }) => {
@@ -85,9 +86,7 @@ const ChatList = (props) => {
                                 (user) => (
                                     
                                     <View style={styles.row}>
-                                    { console.log("ttt: " + JSON.stringify(item))}
                                         <TouchableOpacity onPress={() => props.navigation.navigate('OtherProfile', { userId: item.id })}>
-                                            {console.log("t: " + item.id)}
                                             <Image source={{ uri: item.image }} style={styles.pic} />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => userOnPress(user, item.user2)}>

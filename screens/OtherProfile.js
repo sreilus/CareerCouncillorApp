@@ -88,7 +88,7 @@ export default class OtherProfile extends React.Component {
                       small
                       style={{ backgroundColor: argonTheme.COLORS.INFO }}
                     >
-                      CONNECT
+                      TAKİP ET
                       
                     </Button>
                     <Button
@@ -96,10 +96,10 @@ export default class OtherProfile extends React.Component {
                       style={{ backgroundColor: argonTheme.COLORS.DEFAULT }}
                       onPress={()=>alert("girdi")}
                     >
-                      MESSAGE
+                      MESAJ
                     </Button>
                   </Block>
-                  <Block row space="between">
+                  <Block row space="around">
                     <Block middle>
                       <Text
                         bold
@@ -107,11 +107,11 @@ export default class OtherProfile extends React.Component {
                         color="#525F7F"
                         style={{ marginBottom: 4 }}
                       >
-                        2K
+                        186
                       </Text>
-                      <Text size={12}>Orders</Text>
+                      <Text size={12}>Takipçi</Text>
                     </Block>
-                    <Block middle>
+                    {/* <Block middle>
                       <Text
                         bold
                         color="#525F7F"
@@ -121,7 +121,7 @@ export default class OtherProfile extends React.Component {
                         10
                       </Text>
                       <Text size={12}>Photos</Text>
-                    </Block>
+                    </Block> */}
                     <Block middle>
                       <Text
                         bold
@@ -131,7 +131,7 @@ export default class OtherProfile extends React.Component {
                       >
                         89
                       </Text>
-                      <Text size={12}>Comments</Text>
+                      <Text size={12}>Yorum</Text>
                     </Block>
                   </Block>
                 </Block>
@@ -141,11 +141,10 @@ export default class OtherProfile extends React.Component {
                      {this.state.otherUserInfo.name}
                   </Text>
                     <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
-                      San Francisco, USA
+                    {this.state.otherUserInfo.userType == 2 ? 'Rehber Öğretmen' : 'Öğrenci'}
                     </Text>
                   </Block>
                  
-                  
                 </Block>
               </Block>
             </ScrollView>

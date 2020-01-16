@@ -24,9 +24,9 @@ export default class BottomNavigator extends React.Component {
     state = {
         index: 0,
         routes: [
-            { key: 'music', title: 'Üniversiteler', icon: 'home' },
-            { key: 'programs', title: 'Bölümler', icon: 'home' },
-            { key: 'users', title: 'Kullanıcılar', icon: 'face-profile' },
+            { key: 'music', title: 'Üniversiteler', icon: 'school' },
+            { key: 'programs', title: 'Bölümler', icon: 'seat-legroom-reduced' },
+            { key: 'users', title: 'Danışmanlar', icon: 'face-profile' },
             { key: 'albums', title: 'Mesajlar', icon: 'chat' },
             { key: 'recents', title: 'Profil', icon: 'face-profile' },
 
@@ -64,7 +64,7 @@ export default class BottomNavigator extends React.Component {
             case 'albums':
                 return <ChatList navigation={this.props.navigation} jumpTo={jumpTo} />;
             case 'recents':
-                return <ProfileArgon jumpTo={jumpTo} />;
+                return <ProfileArgon navigation={this.props.navigation} jumpTo={jumpTo} />;
         }
     }
 

@@ -154,7 +154,7 @@ export default class UserList extends Component {
                                     (user) => (
                                         <View style={styles.row}>
                                             <TouchableOpacity onPress={() => this.props.navigation.navigate('OtherProfile', { userId: item.id })}>
-                                                {console.log("user: " + item.id)}
+                                               
                                                 <Image source={{ uri: item.image }} style={styles.pic} />
                                             </TouchableOpacity>
                                             <TouchableOpacity onPress={() => this.userOnPress(user, item)}>

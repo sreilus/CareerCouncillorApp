@@ -6,7 +6,7 @@ import {
     StatusBar,
     KeyboardAvoidingView,
     Alert,
-    
+    AsyncStorage
 } from "react-native";
 import { Block, Checkbox, Text, theme } from "galio-framework";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -89,7 +89,7 @@ const Login =(props)=> {
             }
         }).then(response => {
             if (response.status == 200) {
-                //alert("Giriş Başarılı!");
+                AsyncStorage.setItem('isLoggedIn','1')
                 props.navigation.navigate("BottomNavigator");
             }
             else {

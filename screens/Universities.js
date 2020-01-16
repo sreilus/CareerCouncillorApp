@@ -105,7 +105,7 @@ export default class UniversityList extends Component {
     }
 
     renderItem = ({ item }) => {
-        console.log("ttt: " + JSON.stringify(item));
+       // console.log("ttt: " + JSON.stringify(item));
         // var callIcon = "https://img.icons8.com/color/48/000000/phone.png";
         // if (item.video == true) {
         //     callIcon = "https://img.icons8.com/color/48/000000/video-call.png";
@@ -116,7 +116,6 @@ export default class UniversityList extends Component {
                     (user) => (
                         <View style={styles.row}>
                             <TouchableOpacity onPress={() => this.props.navigation.navigate('OtherProfile', { userId: item.id })}>
-                                {console.log("uni: " + item.id)}
                             </TouchableOpacity>
                             <TouchableOpacity onPress={() => this.userOnPress(user, item)}>
                                 <View>

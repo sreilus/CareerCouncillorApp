@@ -5,14 +5,16 @@ import {
   ScrollView,
   Image,
   ImageBackground,
-  Platform
+  Platform,
+  TouchableOpacity,
+  AsyncStorage
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 
 import { Button } from "../components";
 import { Images, argonTheme } from "../constants";
 import { HeaderHeight } from "../constants/utils";
-import  {UserContext}  from '../contexts/UserContext';
+import { UserContext } from '../contexts/UserContext';
 
 
 const { width, height } = Dimensions.get("screen");
@@ -20,6 +22,30 @@ const { width, height } = Dimensions.get("screen");
 const thumbMeasure = (width - 48 - 32) / 3;
 
 export default class ProfileArgon extends React.Component {
+  static contextType = UserContext
+
+  state = ({
+    user: {}
+  })
+
+  _logout =async ()=>{
+    alert('Çıkış Yapıldı');
+    try {
+      await AsyncStorage.setItem('isLoggedIn','0');
+      this.props.navigation.navigate('Login');
+    }
+    catch(exception) {
+      alert('Hata oluştu!');
+    }
+  }
+
+  componentDidMount() {
+    const currentUser = this.context
+    this.setState({
+      user: currentUser[0]
+    })
+  }
+
   render() {
     return (
       <Block flex style={styles.profile}>
@@ -47,21 +73,21 @@ export default class ProfileArgon extends React.Component {
                     space="evenly"
                     style={{ marginTop: 20, paddingBottom: 24 }}
                   >
-                    <Button
+                    {/* <Button
                       small
                       style={{ backgroundColor: argonTheme.COLORS.INFO }}
                     >
-                      CONNECT
+                      TAKİP ET
                     </Button>
                     <Button
                       small
                       style={{ backgroundColor: argonTheme.COLORS.DEFAULT }}
                     >
-                      MESSAGE
-                    </Button>
+                      MESAJ
+                    </Button> */}
                   </Block>
-                  <Block row space="between">
-                    <Block middle>
+                  <Block row space="around">
+                    {/* <Block middle>
                       <Text
                         bold
                         size={12}
@@ -71,51 +97,54 @@ export default class ProfileArgon extends React.Component {
                         2K
                       </Text>
                       <Text size={12}>Orders</Text>
+                    </Block> */
+                    }
+                    <Block center>
+                      <Text
+                        bold
+                        color="#525F7F"
+                        size={16}
+                        style={{ marginBottom: 4 }}
+                      >
+                        {this.state.user.userType == 2 ? 10 : ''}
+                      </Text>
+                      <Text size={16}>{this.state.user.userType == 2 ? 'Takipçi' : ''}</Text>
                     </Block>
+
                     <Block middle>
                       <Text
                         bold
                         color="#525F7F"
-                        size={12}
+                        size={15}
                         style={{ marginBottom: 4 }}
                       >
-                        10
+                        {this.state.user.userType == 2 ? 89 : ''}
                       </Text>
-                      <Text size={12}>Photos</Text>
-                    </Block>
-                    <Block middle>
-                      <Text
-                        bold
-                        color="#525F7F"
-                        size={12}
-                        style={{ marginBottom: 4 }}
-                      >
-                        89
-                      </Text>
-                      <Text size={12}>Comments</Text>
+                      <Text size={15}>{this.state.user.userType == 2 ? 'Yorum' : ''}</Text>
                     </Block>
                   </Block>
                 </Block>
                 <Block flex>
                   <Block middle style={styles.nameInfo}>
-                  <UserContext.Consumer>
-                     {
-                  (user)=>(
                     <Text bold size={28} color="#32325D">
-                    {user[0].name}
-                  </Text>
-                  )
-                         }
-              </UserContext.Consumer>
-                    
+                      {this.state.user.name}
+                    </Text>
                     <Text size={16} color="#32325D" style={{ marginTop: 10 }}>
-                      San Francisco, USA
+                      {
+                        this.state.user.userType == 2 ? 'Rehber Öğretmen' : 'Öğrenci'
+                      }
                     </Text>
                   </Block>
-                 
-                  
+
+
                 </Block>
               </Block>
+              <TouchableOpacity onPress={()=> this._logout()}>
+                <Image
+                  source={require('../assets/imgs/logout.png')}
+                  style={{height:50,width:50,alignSelf:'center',marginTop:15}}
+                />
+              </TouchableOpacity>
             </ScrollView>
           </ImageBackground>
         </Block>

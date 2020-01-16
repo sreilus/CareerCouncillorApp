@@ -1,4 +1,9 @@
-import { createStackNavigator } from 'react-navigation-stack';
+import React from "react";
+import {
+  View,
+  AsyncStorage
+} from "react-native";
+import { createStackNavigator, } from 'react-navigation-stack';
 import { createAppContainer,createSwitchNavigator } from "react-navigation";
 import Register from './screens/Register';
 import RegisterStudent from './screens/RegisterStudent';
@@ -11,7 +16,26 @@ import UniProgramChat from './screens/UniProgramChat'
 import ChatTest from './screens/ChatTest'
 import UserList from './screens/UserList';
 import OtherProfile from './screens/OtherProfile'
-import Universities from './screens/Universities'
+
+
+class AuthLoadingScreen extends React.Component {
+  constructor(props) {
+      super(props);
+      this._loadData();
+  }
+
+  render() {
+      return (
+          <View >
+          </View>
+      );
+  }
+
+  _loadData = async () => {
+      const isLoggedIn = await AsyncStorage.getItem("isLoggedIn");
+      this.props.navigation.navigate(isLoggedIn == '1' ? 'App' : 'Auth')
+  }
+}
 
 const AppNavigator = createStackNavigator(
     {
@@ -33,4 +57,15 @@ const AppNavigator = createStackNavigator(
     }
 );
 
-export default createAppContainer(AppNavigator);
+export default createAppContainer(
+  createSwitchNavigator(
+      {
+          AuthLoading: AuthLoadingScreen,
+          App: BottomNavigator,
+          Auth: AppNavigator,
+      },
+      {
+          initialRouteName: 'AuthLoading',
+      }
+  )
+);
