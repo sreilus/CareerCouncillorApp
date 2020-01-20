@@ -7,7 +7,8 @@ import {
   ImageBackground,
   Platform,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
+  Alert
 } from "react-native";
 import { Block, Text, theme } from "galio-framework";
 
@@ -28,15 +29,30 @@ export default class ProfileArgon extends React.Component {
     user: {}
   })
 
-  _logout =async ()=>{
-    alert('Çıkış Yapıldı');
+  logout = async()=>{
     try {
-      await AsyncStorage.setItem('isLoggedIn','0');
-      this.props.navigation.navigate('Login');
-    }
-    catch(exception) {
-      alert('Hata oluştu!');
-    }
+          await AsyncStorage.setItem('isLoggedIn','0');
+          this.props.navigation.navigate('Login');
+        }
+        catch(exception) {
+          alert('Hata oluştu!');
+        }
+  }
+
+  _logout =async ()=>{
+    Alert.alert(
+      'Oturumu Kapat',
+      'Çıkış Yapmak İstiyor Musunuz?',
+      [
+        {
+          text: 'Çıkış Yap',
+          onPress: () => this.logout(),
+          style: 'cancel',
+        },
+        {text: 'İptal', onPress: () => console.log('İptal Pressed')},
+      ],
+      {cancelable: false},
+    );
   }
 
   componentDidMount() {

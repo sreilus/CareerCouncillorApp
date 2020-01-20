@@ -20,7 +20,7 @@ const ChatList = (props) => {
     const socket = io("http://192.168.1.53:3600", { forceNode: true });
 
     socket.on('getChatUsers', data => {
-        //console.log("veri: " + JSON.stringify(data));
+        console.log("veri: " + JSON.stringify(data));
         setChats(data);
     });
     useEffect(() => {
@@ -29,19 +29,25 @@ const ChatList = (props) => {
     })
 
     const userOnPress = (user, otherUser) => {
-        let roomName = otherUser.email + '@!@!2!@!@' + user[0].email
+        let roomName = '';
+        if (user[0].userType == 1) {
+            roomName = user[0].email + '@!@!2!@!@' + otherUser.email;
+        }
+        else {
+            roomName = otherUser.email + '@!@!2!@!@' + user[0].email
+        }
         console.log('r: ' + roomName)
         console.log("other: " + JSON.stringify(otherUser))
         props.navigation.navigate('Chat', { room: roomName, userId: user[0]._id, otherUserId: otherUser.id })
-        
+
     }
 
     // const renderItem = ({ item }) => {
     //     console.log("ttt: " + JSON.stringify(item));
-    //     // var callIcon = "https://img.icons8.com/color/48/000000/phone.png";
-    //     // if (item.video == true) {
-    //     //     callIcon = "https://img.icons8.com/color/48/000000/video-call.png";
-    //     // }
+    //     var callIcon = "https://img.icons8.com/color/48/000000/phone.png";
+    //      if (item.video == true) {
+    //          callIcon = "https://img.icons8.com/color/48/000000/video-call.png";
+    //      }
     //     return (
     //         <UserContext.Consumer>
     //             {
@@ -79,20 +85,21 @@ const ChatList = (props) => {
                         return item.id;
                     }}
                     renderItem={({ item }) =>
-                    
+
                         <UserContext.Consumer>
                             {
-                                 
+
                                 (user) => (
-                                    
+
                                     <View style={styles.row}>
                                         <TouchableOpacity onPress={() => props.navigation.navigate('OtherProfile', { userId: item.id })}>
-                                            <Image source={{ uri: item.image }} style={styles.pic} />
+                                            <Image source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/User_Avatar_2.png' }} style={styles.pic} />
                                         </TouchableOpacity>
                                         <TouchableOpacity onPress={() => userOnPress(user, item.user2)}>
                                             <View>
                                                 <View style={styles.nameContainer}>
-                                                    <Text style={styles.nameTxt}>{item.user2.name}</Text>
+                                                    {console.log('itemm: '+JSON.stringify(item))}
+                                                    {/* <Text style={styles.nameTxt}>Danışman {item.user1.name}</Text> */}
                                                 </View>
                                                 <View style={styles.end}>
                                                     {/* <Image style={[styles.icon, { marginLeft: 15, marginRight: 5, width: 14, height: 14 }]} source={{ uri: "https://img.icons8.com/small/14/000000/double-tick.png" }} /> */}

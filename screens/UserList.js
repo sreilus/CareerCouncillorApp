@@ -80,7 +80,7 @@ export default class UserList extends Component {
             this.addRecords(this.state.page);
         });
     }
-
+//  https://www.bootdey.com/img/Content/avatar/avatar7.png
     convertItemForList = (userList) => {
         let userArray = [];
         userList.map((user) => {
@@ -88,9 +88,9 @@ export default class UserList extends Component {
                 id: user._id,
                 name: user.name,
                 date: "12 jan",
-                time: '11:14 am',
-                video: false,
-                image: 'https://www.bootdey.com/img/Content/avatar/avatar7.png',
+                time: '11:14 am',//https://cdn3.iconfinder.com/data/icons/vector-icons-6/96/256-512.png
+                video: false,//https://upload.wikimedia.org/wikipedia/commons/f/f4/User_Avatar_2.png
+                image: 'https://upload.wikimedia.org/wikipedia/commons/f/f4/User_Avatar_2.png',
                 email: user.email
             }
             userArray.push(newUser);
@@ -98,7 +98,6 @@ export default class UserList extends Component {
         this.setState({
             users: userArray
         });
-
     }
 
     userOnPress = (user, otherUser) => {

@@ -164,7 +164,7 @@ export default class RegisterTeacher extends React.Component {
                     <Block flex middle>
 
                         <Block style={{marginLeft:12}}>
-                            <KeyboardAwareScrollView style={{ marginVertical: 40 }} behavior="padding" enabled>
+                            <KeyboardAwareScrollView style={{ marginVertical: 40,marginTop:115 }} behavior="padding" enabled>
                                 <Formik initialValues={{ name: '', surname: '', email: '',  password: '', passwordConfirmation: ''}}
                                     onSubmit={(values, actions) => {
                                         //alert(JSON.stringify(values.firstName));

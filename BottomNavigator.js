@@ -6,7 +6,6 @@ import {
 
 import AddMovie from './screens/AddMovie';
 
-import ProfilePage from './screens/ProfilePage';
 import ProfileArgon from './screens/ProfileArgon';
 import Chat from './screens/Chat';
 import UserList from './screens/UserList';
@@ -26,7 +25,7 @@ export default class BottomNavigator extends React.Component {
         routes: [
             { key: 'music', title: 'Üniversiteler', icon: 'school' },
             { key: 'programs', title: 'Bölümler', icon: 'seat-legroom-reduced' },
-            { key: 'users', title: 'Danışmanlar', icon: 'face-profile' },
+            { key: 'users', title: 'Danışmanlar', icon: 'tag-faces' },
             { key: 'albums', title: 'Mesajlar', icon: 'chat' },
             { key: 'recents', title: 'Profil', icon: 'face-profile' },
 
